@@ -11,15 +11,36 @@ public abstract class FighterBase : MonoBehaviour, IFighter
     [Header("Combat Settings")]
     [SerializeField] private float combatRange = 2.5f;
     [SerializeField] private float attackCooldown = 0.8f;
+
     [SerializeField] private FighterBase opponent;
+    public bool OpponentIsDefeated => opponent != null && opponent.IsDefeated;
+
     [SerializeField] private HealthBar healthBar;
 
     protected Animator animator;
+
+    protected virtual void LateUpdate()
+    {
+        if (opponent == null) return;
+
+        Vector3 direction = opponent.transform.position - transform.position;
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude > 0.001f)
+        {
+            transform.rotation = Quaternion.LookRotation(direction);
+        }
+    }
 
     private float currentHealth;
     private float lastAttackTime = -Mathf.Infinity;
     private bool isBlocking;
     private bool isDefeated;
+
+    public bool IsDefeated => isDefeated;
+
+    private enum AttackType { None, Punch, Kick }
+    private AttackType pendingAttack = AttackType.None;
 
     protected virtual void Start()
     {
@@ -27,9 +48,7 @@ public abstract class FighterBase : MonoBehaviour, IFighter
         currentHealth = maxHealth;
 
         if (healthBar != null)
-        {
             healthBar.SetMaxHealth(maxHealth);
-        }
     }
 
     public virtual void Attack()
@@ -37,12 +56,8 @@ public abstract class FighterBase : MonoBehaviour, IFighter
         if (isDefeated || !CanAttack()) return;
 
         StopBlock();
+        pendingAttack = AttackType.Punch;
         animator.SetTrigger("Punch");
-
-        if (IsOpponentInRange())
-        {
-            opponent.TakeDamage(attackDamage);
-        }
     }
 
     public virtual void Kick()
@@ -50,11 +65,36 @@ public abstract class FighterBase : MonoBehaviour, IFighter
         if (isDefeated || !CanAttack()) return;
 
         StopBlock();
+        pendingAttack = AttackType.Kick;
         animator.SetTrigger("Kick");
+    }
 
-        if (IsOpponentInRange())
+
+    public void PunchHitFrame()
+    {
+        if (pendingAttack != AttackType.Punch) return;
+
+        pendingAttack = AttackType.None;
+
+        if (IsOpponentInRange() &&
+            IsFacingOpponent() &&
+            opponent.IsFacingOpponent())
+            opponent.TakeDamage(attackDamage);
+    }
+
+
+    public void KickHitFrame()
+    {
+        if (pendingAttack != AttackType.Kick) return;
+
+        pendingAttack = AttackType.None;
+
+        if (IsOpponentInRange() &&
+            IsFacingOpponent() &&
+            opponent.IsFacingOpponent())
         {
             opponent.TakeDamage(kickDamage);
+            opponent.animator.SetTrigger("KickHit");
         }
     }
 
@@ -98,9 +138,7 @@ public abstract class FighterBase : MonoBehaviour, IFighter
         if (isDefeated) return;
 
         if (isBlocking)
-        {
             damage *= 0.25f;
-        }
 
         currentHealth -= damage;
         currentHealth = Mathf.Max(0, currentHealth);
@@ -108,16 +146,22 @@ public abstract class FighterBase : MonoBehaviour, IFighter
         Debug.Log(gameObject.name + " Health: " + currentHealth);
 
         if (healthBar != null)
-        {
             healthBar.SetHealth(currentHealth);
-        }
 
         if (currentHealth <= 0)
         {
             isDefeated = true;
+            animator.SetTrigger("Death");
+            if (opponent != null)
+            {
+                opponent.animator.SetTrigger("Victory");
+            }
             Debug.Log(gameObject.name + " has been defeated!");
             StopBlock();
         }
+
+        if (damage > 0 && !isBlocking)
+            animator.SetTrigger("Hit");
     }
 
     public float GetAttackDamage()
@@ -133,5 +177,17 @@ public abstract class FighterBase : MonoBehaviour, IFighter
     public float GetHealth()
     {
         return currentHealth;
+    }
+
+    private bool IsFacingOpponent()
+    {
+        if (opponent == null) return false;
+
+        Vector3 direction = opponent.transform.position - transform.position;
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.001f) return false;
+
+        return Vector3.Dot(transform.forward, direction.normalized) > 0.5f;
     }
 }

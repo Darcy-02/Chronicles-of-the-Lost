@@ -24,6 +24,7 @@ public class FighterAI : FighterBase
     void Update()
     {
         if (playerTarget == null) return;
+        if (IsDefeated || OpponentIsDefeated) return;
 
         float distance = Vector3.Distance(
             transform.position,

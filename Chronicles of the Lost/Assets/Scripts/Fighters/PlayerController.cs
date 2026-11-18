@@ -13,6 +13,7 @@ public class PlayerController : FighterBase
 
     void Update()
     {
+        if (IsDefeated) return;
 
         float vertical = Input.GetAxisRaw("Vertical");
 
