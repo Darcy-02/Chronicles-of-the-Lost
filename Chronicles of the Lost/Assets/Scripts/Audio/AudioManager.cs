@@ -1,16 +1,24 @@
+
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-
     public static AudioManager Instance { get; private set; }
 
     [Header("Audio Sources")]
+    [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource sfxSource;
 
-    [Header("Sound Effects")]
-    [SerializeField] private AudioClip punchSwingClip;
-    [SerializeField] private AudioClip punchHitClip;
+    [Header("Background Music")]
+    [SerializeField] private AudioClip backgroundMusic;
+
+    [Header("Combat Sounds")]
+    [SerializeField] private AudioClip punchSound;
+    [SerializeField] private AudioClip kickSound;
+    [SerializeField] private AudioClip hitSound;
+    [SerializeField] private AudioClip blockSound;
+    [SerializeField] private AudioClip deathSound;
+
 
     private void Awake()
     {
@@ -19,27 +27,63 @@ public class AudioManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
     }
 
- 
-    public void PlayPunchSwing()
+    private void Start()
     {
-        PlaySound(punchSwingClip);
+        if (backgroundMusic != null && musicSource != null)
+        {
+            musicSource.clip = backgroundMusic;
+            musicSource.loop = true;
+            musicSource.Play();
+        }
     }
 
-    public void PlayPunchHit()
+    public void PlayPunch()
     {
-        PlaySound(punchHitClip);
+        Debug.Log("PUNCH SOUND REQUESTED");
+        PlaySound(punchSound);
     }
+
+    public void PlayKick()
+    {
+        PlaySound(kickSound);
+    }
+
+    public void PlayHit()
+    {
+        PlaySound(hitSound);
+    }
+
+    public void PlayBlock()
+    {
+        PlaySound(blockSound);
+    }
+
+    public void PlayDeath()
+    {
+        PlaySound(deathSound);
+    }
+
 
     private void PlaySound(AudioClip clip)
     {
-        if (clip != null && sfxSource != null)
+        if (clip == null)
         {
-
-            sfxSource.PlayOneShot(clip);
+            Debug.LogError("Audio clip is missing!");
+            return;
         }
+
+        if (sfxSource == null)
+        {
+            Debug.LogError("SFX Source is missing!");
+            return;
+        }
+
+        Debug.Log("PLAYING SOUND: " + clip.name);
+        sfxSource.PlayOneShot(clip);
     }
 }
 

@@ -18,6 +18,8 @@ public abstract class FighterBase : MonoBehaviour, IFighter
     [SerializeField] private HealthBar healthBar;
     [SerializeField] private DissolvingController dissolvingController;
 
+    [SerializeField] private FightingCameraController cameraController;
+
     protected Animator animator;
 
     protected virtual void LateUpdate()
@@ -80,7 +82,10 @@ public abstract class FighterBase : MonoBehaviour, IFighter
         if (IsOpponentInRange() &&
             IsFacingOpponent() &&
             opponent.IsFacingOpponent())
+        {
+            AudioManager.Instance?.PlayPunch();
             opponent.TakeDamage(attackDamage);
+        }
     }
 
 
@@ -94,6 +99,7 @@ public abstract class FighterBase : MonoBehaviour, IFighter
             IsFacingOpponent() &&
             opponent.IsFacingOpponent())
         {
+            AudioManager.Instance?.PlayKick();
             opponent.TakeDamage(kickDamage);
             opponent.animator.SetTrigger("KickHit");
         }
@@ -139,7 +145,14 @@ public abstract class FighterBase : MonoBehaviour, IFighter
         if (isDefeated) return;
 
         if (isBlocking)
+        {
             damage *= 0.25f;
+            AudioManager.Instance?.PlayBlock();
+        }
+        else
+        {
+            AudioManager.Instance?.PlayHit();
+        }
 
         currentHealth -= damage;
         currentHealth = Mathf.Max(0, currentHealth);
@@ -149,33 +162,34 @@ public abstract class FighterBase : MonoBehaviour, IFighter
         if (healthBar != null)
             healthBar.SetHealth(currentHealth);
 
+        if (cameraController != null)
+            cameraController.ShakeCamera();
+
         if (currentHealth <= 0)
         {
             isDefeated = true;
+
             animator.SetTrigger("Death");
 
-            Debug.Log("DEFEATED FIGHTER: " + gameObject.name);
+            AudioManager.Instance?.PlayDeath();
 
             if (dissolvingController != null)
-            {
-                Debug.Log("DISSOLVE CONTROLLER: " + dissolvingController.gameObject.name);
                 dissolvingController.StartDissolve();
-            }
-            else
-            {
-                Debug.Log("NO DISSOLVE CONTROLLER ASSIGNED!");
-            }
 
             if (opponent != null)
             {
                 opponent.animator.SetTrigger("Victory");
+                
             }
+
             Debug.Log(gameObject.name + " has been defeated!");
+
             StopBlock();
         }
-
-        if (damage > 0 && !isBlocking)
+        else if (!isBlocking)
+        {
             animator.SetTrigger("Hit");
+        }
     }
 
     public float GetAttackDamage()
