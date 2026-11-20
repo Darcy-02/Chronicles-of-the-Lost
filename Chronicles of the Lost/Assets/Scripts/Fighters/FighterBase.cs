@@ -16,6 +16,7 @@ public abstract class FighterBase : MonoBehaviour, IFighter
     public bool OpponentIsDefeated => opponent != null && opponent.IsDefeated;
 
     [SerializeField] private HealthBar healthBar;
+    [SerializeField] private DissolvingController dissolvingController;
 
     protected Animator animator;
 
@@ -152,6 +153,19 @@ public abstract class FighterBase : MonoBehaviour, IFighter
         {
             isDefeated = true;
             animator.SetTrigger("Death");
+
+            Debug.Log("DEFEATED FIGHTER: " + gameObject.name);
+
+            if (dissolvingController != null)
+            {
+                Debug.Log("DISSOLVE CONTROLLER: " + dissolvingController.gameObject.name);
+                dissolvingController.StartDissolve();
+            }
+            else
+            {
+                Debug.Log("NO DISSOLVE CONTROLLER ASSIGNED!");
+            }
+
             if (opponent != null)
             {
                 opponent.animator.SetTrigger("Victory");
