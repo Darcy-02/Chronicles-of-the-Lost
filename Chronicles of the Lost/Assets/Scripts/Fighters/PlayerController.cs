@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class PlayerController : FighterBase
 {
+    [Header("Movement")]
+    [SerializeField] private float rotationSpeed = 720f;
+
     private FighterMovement movement;
 
     protected override void Start()
@@ -11,20 +14,40 @@ public class PlayerController : FighterBase
         movement = GetComponent<FighterMovement>();
     }
 
-    void Update()
+    private void Update()
     {
-        if (IsDefeated) return;
+        if (!CanFight) return;
 
-        float vertical = Input.GetAxisRaw("Vertical");
+        float horizontal = 0f;
+        float vertical = 0f;
 
-        Vector3 direction = new Vector3(0f, 0f, vertical);
+        if (Input.GetKey(KeyCode.A)) horizontal = -1f;
+        if (Input.GetKey(KeyCode.D)) horizontal = 1f;
+        if (Input.GetKey(KeyCode.S)) vertical = -1f;
+        if (Input.GetKey(KeyCode.W)) vertical = 1f;
+
+        Vector3 direction = new Vector3(horizontal, 0f, vertical);
+
+        // Temporarily stop automatic opponent-facing while moving backward.
+        bool movingBackward = vertical < 0f;
+        SetTemporaryFacing(movingBackward);
+
+        // Turn towards the direction of backward movement.
+        if (movingBackward && direction.sqrMagnitude > 0.001f)
+        {
+            Quaternion targetRotation =
+                Quaternion.LookRotation(direction.normalized);
+
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                rotationSpeed * Time.deltaTime
+            );
+        }
 
         movement.Move(direction);
 
-        if (direction == Vector3.zero)
-        {
-            GetComponent<Animator>().SetFloat("Speed", 0f);
-        }
+        fighterAnimation.SetSpeed(direction.magnitude);
 
         if (Input.GetKeyDown(KeyCode.J))
             Attack();

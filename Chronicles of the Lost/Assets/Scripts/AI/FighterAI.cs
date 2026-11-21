@@ -7,7 +7,6 @@ public class FighterAI : FighterBase
     [SerializeField] private Transform playerTarget;
     [SerializeField] private float attackRange = 3f;
     [SerializeField] private float decisionInterval = 1.5f;
-    [SerializeField] private float moveSpeed = 2f;
 
     private AIDecisionMaker decisionMaker;
     private float decisionTimer;
@@ -16,15 +15,17 @@ public class FighterAI : FighterBase
     protected override void Start()
     {
         base.Start();
+
         movement = GetComponent<FighterMovement>();
         decisionMaker = new AIDecisionMaker();
     }
 
-
-    void Update()
+    private void Update()
     {
-        if (playerTarget == null) return;
-        if (IsDefeated || OpponentIsDefeated) return;
+        if (!CanFight) return;
+
+        if (playerTarget == null || OpponentIsDefeated)
+            return;
 
         float distance = Vector3.Distance(
             transform.position,
@@ -33,34 +34,22 @@ public class FighterAI : FighterBase
 
         if (distance > attackRange)
         {
-            StopBlocking();
+            StopBlock();
             MoveTowardsPlayer();
+            return;
         }
-        else
+
+        decisionTimer += Time.deltaTime;
+
+        if (decisionTimer >= decisionInterval)
         {
-            decisionTimer += Time.deltaTime;
-
-            if (decisionTimer >= decisionInterval)
-            {
-                decisionTimer = 0f;
-                MakeDecision();
-            }
+            decisionTimer = 0f;
+            MakeDecision(distance);
         }
     }
 
-    void StopBlocking()
+    private void MakeDecision(float distance)
     {
-        StopBlock();
-    }
-
-
-    void MakeDecision()
-    {
-        float distance = Vector3.Distance(
-            transform.position,
-            playerTarget.position
-        );
-
         AIDecisionMaker.Action action =
             decisionMaker.Decide(distance, GetHealth());
 
@@ -84,11 +73,10 @@ public class FighterAI : FighterBase
         }
     }
 
-    void MoveTowardsPlayer()
+    private void MoveTowardsPlayer()
     {
         Vector3 direction = playerTarget.position - transform.position;
 
-        direction.x = 0f;
         direction.y = 0f;
 
         movement.Move(direction);

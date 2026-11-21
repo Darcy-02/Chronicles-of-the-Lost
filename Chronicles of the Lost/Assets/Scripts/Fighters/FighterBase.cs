@@ -1,221 +1,175 @@
 
 using UnityEngine;
+using System;
 
 public abstract class FighterBase : MonoBehaviour, IFighter
 {
-    [Header("Fighter Settings")]
-    [SerializeField] private float maxHealth = 100f;
-    [SerializeField] private float attackDamage = 10f;
-    [SerializeField] private float kickDamage = 20f;
-
-    [Header("Combat Settings")]
-    [SerializeField] private float combatRange = 2.5f;
-    [SerializeField] private float attackCooldown = 0.8f;
-
+    [Header("References")]
     [SerializeField] private FighterBase opponent;
-    public bool OpponentIsDefeated => opponent != null && opponent.IsDefeated;
+    [SerializeField] private FighterHealth health;
+    [SerializeField] private FighterCombat combat;
+    [SerializeField] private FighterDefense defense;
+    [SerializeField] private FighterEffects fighterEffects;
+    [SerializeField] private FighterAudio fighterAudio;
 
-    [SerializeField] private HealthBar healthBar;
-    [SerializeField] private DissolvingController dissolvingController;
+    private bool canFight = true;
 
-    [SerializeField] private FightingCameraController cameraController;
+    protected FighterAnimation fighterAnimation;
 
-    protected Animator animator;
+    public bool IsDefeated => health != null && health.IsDefeated;
+
+    public bool OpponentIsDefeated =>
+        opponent != null && opponent.IsDefeated;
+
+    protected bool CanFight => canFight && !IsDefeated;
+
+    public event Action OnFighterDefeated;
+
+    protected virtual void Start()
+    {
+       
+        if (health == null)
+            health = GetComponent<FighterHealth>();
+
+        if (combat == null)
+            combat = GetComponent<FighterCombat>();
+
+        if (defense == null)
+            defense = GetComponent<FighterDefense>();
+
+        if (fighterAnimation == null)
+            fighterAnimation = GetComponent<FighterAnimation>();
+
+        if (fighterEffects == null)
+            fighterEffects = GetComponent<FighterEffects>();
+
+        if (fighterAudio == null)
+            fighterAudio = GetComponent<FighterAudio>();
+
+        if (health != null)
+        {
+            health.OnDamaged += HandleDamaged;
+            health.OnDefeated += HandleDefeated;
+        }
+    }
+
+    private bool temporarilyDisableFacing;
+
+    public void SetTemporaryFacing(bool value)
+    {
+        temporarilyDisableFacing = value;
+    }
 
     protected virtual void LateUpdate()
     {
+        if (temporarilyDisableFacing) return;
+
         if (opponent == null) return;
 
         Vector3 direction = opponent.transform.position - transform.position;
         direction.y = 0f;
 
         if (direction.sqrMagnitude > 0.001f)
-        {
             transform.rotation = Quaternion.LookRotation(direction);
+    }
+
+    private void OnDestroy()
+    {
+        if (health != null)
+        {
+            health.OnDamaged -= HandleDamaged;
+            health.OnDefeated -= HandleDefeated;
         }
     }
 
-    private float currentHealth;
-    private float lastAttackTime = -Mathf.Infinity;
-    private bool isBlocking;
-    private bool isDefeated;
-
-    public bool IsDefeated => isDefeated;
-
-    private enum AttackType { None, Punch, Kick }
-    private AttackType pendingAttack = AttackType.None;
-
-    protected virtual void Start()
+    public void SetCanFight(bool value)
     {
-        animator = GetComponent<Animator>();
-        currentHealth = maxHealth;
-
-        if (healthBar != null)
-            healthBar.SetMaxHealth(maxHealth);
+        canFight = value;
     }
 
     public virtual void Attack()
     {
-        if (isDefeated || !CanAttack()) return;
+        if (!CanFight || combat == null) return;
 
         StopBlock();
-        pendingAttack = AttackType.Punch;
-        animator.SetTrigger("Punch");
+        combat.Punch();
     }
 
     public virtual void Kick()
     {
-        if (isDefeated || !CanAttack()) return;
+        if (!CanFight || combat == null) return;
 
         StopBlock();
-        pendingAttack = AttackType.Kick;
-        animator.SetTrigger("Kick");
+        combat.Kick();
     }
-
 
     public void PunchHitFrame()
     {
-        if (pendingAttack != AttackType.Punch) return;
-
-        pendingAttack = AttackType.None;
-
-        if (IsOpponentInRange() &&
-            IsFacingOpponent() &&
-            opponent.IsFacingOpponent())
-        {
-            AudioManager.Instance?.PlayPunch();
-            opponent.TakeDamage(attackDamage);
-        }
+        if (combat != null)
+            combat.PunchHitFrame();
     }
-
 
     public void KickHitFrame()
     {
-        if (pendingAttack != AttackType.Kick) return;
-
-        pendingAttack = AttackType.None;
-
-        if (IsOpponentInRange() &&
-            IsFacingOpponent() &&
-            opponent.IsFacingOpponent())
-        {
-            AudioManager.Instance?.PlayKick();
-            opponent.TakeDamage(kickDamage);
-            opponent.animator.SetTrigger("KickHit");
-        }
-    }
-
-    private bool CanAttack()
-    {
-        if (Time.time - lastAttackTime < attackCooldown)
-            return false;
-
-        lastAttackTime = Time.time;
-        return true;
-    }
-
-    private bool IsOpponentInRange()
-    {
-        if (opponent == null) return false;
-
-        float distance = Vector3.Distance(
-            transform.position,
-            opponent.transform.position
-        );
-
-        return distance <= combatRange;
+        if (combat != null)
+            combat.KickHitFrame();
     }
 
     public virtual void Block()
     {
-        if (isDefeated) return;
+        if (!CanFight || defense == null) return;
 
-        isBlocking = true;
-        animator.SetBool("Block", true);
+        defense.Block();
     }
 
     public virtual void StopBlock()
     {
-        isBlocking = false;
-        animator.SetBool("Block", false);
+        if (defense != null)
+            defense.StopBlock();
     }
 
     public virtual void TakeDamage(float damage)
     {
-        if (isDefeated) return;
+        if (health == null || IsDefeated) return;
 
-        if (isBlocking)
+        health.TakeDamage(damage, defense != null && defense.IsBlocking);
+    }
+
+    private void HandleDamaged(float damage, bool wasBlocking)
+    {
+        if (wasBlocking)
         {
-            damage *= 0.25f;
-            AudioManager.Instance?.PlayBlock();
+            fighterAudio?.PlayBlock();
         }
         else
         {
-            AudioManager.Instance?.PlayHit();
+            fighterAudio?.PlayHit();
+            fighterAnimation?.PlayHit();
         }
 
-        currentHealth -= damage;
-        currentHealth = Mathf.Max(0, currentHealth);
-
-        Debug.Log(gameObject.name + " Health: " + currentHealth);
-
-        if (healthBar != null)
-            healthBar.SetHealth(currentHealth);
-
-        if (cameraController != null)
-            cameraController.ShakeCamera();
-
-        if (currentHealth <= 0)
-        {
-            isDefeated = true;
-
-            animator.SetTrigger("Death");
-
-            AudioManager.Instance?.PlayDeath();
-
-            if (dissolvingController != null)
-                dissolvingController.StartDissolve();
-
-            if (opponent != null)
-            {
-                opponent.animator.SetTrigger("Victory");
-                
-            }
-
-            Debug.Log(gameObject.name + " has been defeated!");
-
-            StopBlock();
-        }
-        else if (!isBlocking)
-        {
-            animator.SetTrigger("Hit");
-        }
+        fighterEffects?.PlayHitEffect();
+        OnFighterDefeated?.Invoke();
     }
 
-    public float GetAttackDamage()
+    private void HandleDefeated()
     {
-        return attackDamage;
-    }
+        fighterAnimation?.PlayDeath();
+        fighterAudio?.PlayDeath();
+        fighterEffects?.PlayDeathEffect();
 
-    public float GetKickDamage()
-    {
-        return kickDamage;
+        if (opponent != null)
+        {
+            opponent.fighterAnimation?.PlayVictory();
+           
+        }
+
+        StopBlock();
+
+        Debug.Log(gameObject.name + " has been defeated!");
     }
 
     public float GetHealth()
     {
-        return currentHealth;
-    }
-
-    private bool IsFacingOpponent()
-    {
-        if (opponent == null) return false;
-
-        Vector3 direction = opponent.transform.position - transform.position;
-        direction.y = 0f;
-
-        if (direction.sqrMagnitude < 0.001f) return false;
-
-        return Vector3.Dot(transform.forward, direction.normalized) > 0.5f;
+        return health != null ? health.GetHealth() : 0f;
     }
 }
