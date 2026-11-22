@@ -148,7 +148,6 @@ public abstract class FighterBase : MonoBehaviour, IFighter
         }
 
         fighterEffects?.PlayHitEffect();
-        OnFighterDefeated?.Invoke();
     }
 
     private void HandleDefeated()
@@ -166,6 +165,7 @@ public abstract class FighterBase : MonoBehaviour, IFighter
         StopBlock();
 
         Debug.Log(gameObject.name + " has been defeated!");
+        OnFighterDefeated?.Invoke();
     }
 
     public float GetHealth()
