@@ -1,22 +1,44 @@
+
 using UnityEngine;
 
 public class FighterAnimation : MonoBehaviour
 {
-    private Animator animator;
+    [Header("Animator")]
+    [SerializeField] private Animator animator;
+
+    [Header("Animation Controller Type")]
+    [SerializeField] private bool useMultipleAttacks;
 
     private void Awake()
     {
-        animator = GetComponent<Animator>();
+        if (animator == null)
+            animator = GetComponent<Animator>();
     }
 
     public void PlayPunch()
     {
-        animator.SetTrigger("Punch");
+        if (useMultipleAttacks)
+        {
+            int punchNumber = Random.Range(1, 4);
+            animator.SetTrigger("Punch" + punchNumber);
+        }
+        else
+        {
+            animator.SetTrigger("Punch");
+        }
     }
 
     public void PlayKick()
     {
-        animator.SetTrigger("Kick");
+        if (useMultipleAttacks)
+        {
+            int kickNumber = Random.Range(1, 4);
+            animator.SetTrigger("Kick" + kickNumber);
+        }
+        else
+        {
+            animator.SetTrigger("Kick");
+        }
     }
 
     public void PlayBlock(bool isBlocking)
@@ -38,6 +60,7 @@ public class FighterAnimation : MonoBehaviour
     {
         animator.SetTrigger("Victory");
     }
+
     public void SetSpeed(float speed)
     {
         animator.SetFloat("Speed", speed);

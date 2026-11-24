@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ec2643db6c7ab504db6bf02d24443d4c
+guid: 0f187f85dc045374b803613f0283b723
 ModelImporter:
   serializedVersion: 24300
   internalIDToNameTable: []
@@ -7,38 +7,28 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Vampire_MAT1
-    second: {fileID: 2100000, guid: 54ff37c44c4ee4f4d8bd48bc1dd40d13, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Vampire_MAT_Transparent
-    second: {fileID: 2100000, guid: cfdd9a7bd36109f408672eebeae4c122, type: 2}
+      name: default1
+    second: {fileID: 2100000, guid: 420423488d9599c4b8a4175355f72d09, type: 2}
   - first:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
-      name: Vampire_diffuse
-    second: {fileID: 2800000, guid: b282aef52869a1e49aa8d952cc27ea6c, type: 3}
+      name: void_ambientocclusion
+    second: {fileID: 2800000, guid: c0849e6c0ecefd1449ceba27d3e8b3ee, type: 3}
   - first:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
-      name: Vampire_diffuse_transparent
-    second: {fileID: 2800000, guid: 946fb4ca06b103d4eab6abfe8fc6b7d8, type: 3}
+      name: void_diffuse
+    second: {fileID: 2800000, guid: 4fdac1deb05184d47877996ce9ef58e5, type: 3}
   - first:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
-      name: Vampire_emission
-    second: {fileID: 2800000, guid: 75764f1f7d8ce14488e160570579c847, type: 3}
+      name: void_normal
+    second: {fileID: 2800000, guid: 7044d17f46c947c44945edaef34a95eb, type: 3}
   - first:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
-      name: Vampire_normal
-    second: {fileID: 2800000, guid: d735c7d98e7924f4fbc42ad28cb5b201, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Vampire_specular
-    second: {fileID: 2800000, guid: 4cd223068c87a9b4da9591253f65f579, type: 3}
+      name: void_specular
+    second: {fileID: 2800000, guid: 8658494e98635a84b8c4238791fcee72, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0

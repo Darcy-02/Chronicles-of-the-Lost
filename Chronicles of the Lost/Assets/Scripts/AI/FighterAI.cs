@@ -20,6 +20,11 @@ public class FighterAI : FighterBase
         decisionMaker = new AIDecisionMaker();
     }
 
+    private void Awake()
+{
+    Debug.Log("FIGHTER AI FOUND ON: " + gameObject.name);
+}
+
     private void Update()
     {
         if (!CanFight) return;

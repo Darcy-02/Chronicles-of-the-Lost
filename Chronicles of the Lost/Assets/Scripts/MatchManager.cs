@@ -16,29 +16,69 @@ public class MatchManager : MonoBehaviour
     [SerializeField] private float countdownDuration = 1f;
     [SerializeField] private float fightTextDuration = 1f;
 
+    private Coroutine countdownCoroutine;
+
     private void Start()
     {
-        StartCoroutine(StartMatch());
+        Debug.Log("MATCH MANAGER: Start called.");
+        StartNewMatch();
+    }
+
+    public void StartNewMatch()
+    {
+        Debug.Log("MATCH MANAGER: StartNewMatch called.");
+
+        if (countdownCoroutine != null)
+        {
+            StopCoroutine(countdownCoroutine);
+            Debug.Log("MATCH MANAGER: Previous countdown stopped.");
+        }
+
+        countdownCoroutine = StartCoroutine(StartMatch());
+
+        Debug.Log("MATCH MANAGER: Starting countdown coroutine.");
+    countdownCoroutine = StartCoroutine(StartMatch());
+    }
+
+
+
+    public void SetNewOpponent(FighterBase newOpponent)
+    {
+        Debug.Log("MATCH MANAGER: Assigning new opponent.");
+
+        player2 = newOpponent;
+
+        Debug.Log("MATCH MANAGER: New opponent assigned: " +
+                  (player2 != null ? player2.name : "NULL"));
     }
 
     private IEnumerator StartMatch()
     {
-        // Keep both fighter components enabled.
-        // Only pause their ability to fight.
+        Debug.Log("COUNTDOWN: Coroutine started.");
+
+        if (player1 == null || player2 == null || countdownText == null)
+        {
+            Debug.LogError("COUNTDOWN ERROR: A reference is missing!");
+            yield break;
+        }
+
+        Debug.Log("COUNTDOWN: Pausing both fighters.");
+
         player1.SetCanFight(false);
         player2.SetCanFight(false);
 
         countdownText.gameObject.SetActive(true);
 
-        // Countdown: 3, 2, 1
         for (int i = 3; i > 0; i--)
         {
             countdownText.text = i.ToString();
+            Debug.Log("COUNTDOWN: " + i);
+
             yield return new WaitForSeconds(countdownDuration);
         }
 
-        // Start the fight
         countdownText.text = "FIGHT!";
+        Debug.Log("COUNTDOWN: FIGHT!");
 
         player1.SetCanFight(true);
         player2.SetCanFight(true);
@@ -46,6 +86,9 @@ public class MatchManager : MonoBehaviour
         yield return new WaitForSeconds(fightTextDuration);
 
         countdownText.gameObject.SetActive(false);
+
+        Debug.Log("COUNTDOWN: Finished.");
+
+        countdownCoroutine = null;
     }
 }
-
