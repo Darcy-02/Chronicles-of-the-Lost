@@ -41,7 +41,7 @@ Each level introduces a new opponent, providing a progressive fighting challenge
 1. Clone the repository:
 
    ```bash
-   git clone YOUR_GITHUB_REPOSITORY_URL
+   git clone https://github.com/Darcy-02/Chronicles-of-the-Lost.git
    ```
 
 2. Open Unity Hub.
