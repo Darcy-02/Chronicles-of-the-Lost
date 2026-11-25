@@ -24,6 +24,7 @@ public class MatchManager : MonoBehaviour
         StartNewMatch();
     }
 
+
     public void StartNewMatch()
     {
         Debug.Log("MATCH MANAGER: StartNewMatch called.");
@@ -34,11 +35,11 @@ public class MatchManager : MonoBehaviour
             Debug.Log("MATCH MANAGER: Previous countdown stopped.");
         }
 
-        countdownCoroutine = StartCoroutine(StartMatch());
-
         Debug.Log("MATCH MANAGER: Starting countdown coroutine.");
-    countdownCoroutine = StartCoroutine(StartMatch());
+
+        countdownCoroutine = StartCoroutine(StartMatch());
     }
+
 
 
 

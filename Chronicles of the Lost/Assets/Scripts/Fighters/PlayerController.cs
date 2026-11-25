@@ -8,18 +8,25 @@ public class PlayerController : FighterBase
 
     private FighterMovement movement;
 
+    private float mobileHorizontal;
+    private float mobileVertical;
+    private bool mobileBlocking;
+    private ComboExecutor comboExecutor;
+
     protected override void Start()
     {
         base.Start();
         movement = GetComponent<FighterMovement>();
+        comboExecutor = GetComponentInChildren<ComboExecutor>(true);
     }
 
     private void Update()
     {
         if (!CanFight) return;
 
-        float horizontal = 0f;
-        float vertical = 0f;
+        float horizontal = mobileHorizontal;
+        float vertical = mobileVertical;
+
 
         if (Input.GetKey(KeyCode.A)) horizontal = -1f;
         if (Input.GetKey(KeyCode.D)) horizontal = 1f;
@@ -28,11 +35,9 @@ public class PlayerController : FighterBase
 
         Vector3 direction = new Vector3(horizontal, 0f, vertical);
 
-        // Temporarily stop automatic opponent-facing while moving backward.
         bool movingBackward = vertical < 0f;
         SetTemporaryFacing(movingBackward);
 
-        // Turn towards the direction of backward movement.
         if (movingBackward && direction.sqrMagnitude > 0.001f)
         {
             Quaternion targetRotation =
@@ -46,7 +51,6 @@ public class PlayerController : FighterBase
         }
 
         movement.Move(direction);
-
         fighterAnimation.SetSpeed(direction.magnitude);
 
         if (Input.GetKeyDown(KeyCode.J))
@@ -55,9 +59,43 @@ public class PlayerController : FighterBase
         if (Input.GetKeyDown(KeyCode.K))
             Kick();
 
-        if (Input.GetKey(KeyCode.L))
+        if (Input.GetKey(KeyCode.L) || mobileBlocking)
             Block();
         else
             StopBlock();
+    }
+
+
+
+    public void SetMobileMovement(float horizontal, float vertical)
+    {
+        mobileHorizontal = horizontal;
+        mobileVertical = vertical;
+    }
+
+    public void MobilePunch()
+    {
+        if (CanFight) Attack();
+    }
+
+    public void MobileKick()
+    {
+        if (CanFight) Kick();
+    }
+
+    public void MobileBlock()
+    {
+        mobileBlocking = true;
+    }
+
+    public void MobileStopBlock()
+    {
+        mobileBlocking = false;
+    }
+
+    public void MobileCombo()
+    {
+        if (CanFight && comboExecutor != null)
+            comboExecutor.GenerateAndPlayCombo();
     }
 }

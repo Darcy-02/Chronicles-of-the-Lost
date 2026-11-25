@@ -1,29 +1,41 @@
+
 using UnityEngine;
 
 public class OpponentSpawner : MonoBehaviour
 {
-    [Header("Opponent Settings")]
-    [SerializeField] private GameObject opponentPrefab;
+    [Header("Opponent Prefabs")]
+    [SerializeField] private GameObject[] opponentPrefabs;
+
+    [Header("Spawn Settings")]
     [SerializeField] private Transform spawnPoint;
 
     [Header("Match Settings")]
     [SerializeField] private MatchManager matchManager;
 
+    [Header("Health Bar")]
+    [SerializeField] private HealthBar player2HealthBar;
+
     private GameObject currentOpponent;
 
-    public void SpawnNextOpponent()
+    public void SpawnOpponent(int levelIndex)
     {
-        Debug.Log("SPAWNER: SpawnNextOpponent called.");
-
-        if (opponentPrefab == null || spawnPoint == null)
+        if (levelIndex < 0 || levelIndex >= opponentPrefabs.Length)
         {
-            Debug.LogError("SPAWNER: Prefab or spawn point missing!");
+            Debug.LogError("SPAWNER: Invalid opponent level!");
             return;
         }
 
-        if (matchManager == null)
+        if (spawnPoint == null || matchManager == null)
         {
-            Debug.LogError("SPAWNER: MatchManager is missing!");
+            Debug.LogError("SPAWNER: Missing references!");
+            return;
+        }
+
+        GameObject prefab = opponentPrefabs[levelIndex];
+
+        if (prefab == null)
+        {
+            Debug.LogError("SPAWNER: Opponent prefab is missing!");
             return;
         }
 
@@ -31,73 +43,65 @@ public class OpponentSpawner : MonoBehaviour
             Destroy(currentOpponent);
 
         currentOpponent = Instantiate(
-            opponentPrefab,
+            prefab,
             spawnPoint.position,
             spawnPoint.rotation
         );
 
-        Transform zombieModel = currentOpponent.GetComponentInChildren<Transform>(true);
 
-        foreach (Transform child in currentOpponent.GetComponentsInChildren<Transform>(true))
+        FighterAI newAI =
+            currentOpponent.GetComponentInChildren<FighterAI>(true);
+
+        FighterHealth opponentHealth =
+            currentOpponent.GetComponentInChildren<FighterHealth>(true);
+
+        FighterCombat opponentCombat =
+            currentOpponent.GetComponentInChildren<FighterCombat>(true);
+
+        if (newAI == null)
         {
-            if (child.name == "skeletonZombie")
-            {
-                zombieModel = child;
-                break;
-            }
+            Debug.LogError("SPAWNER: FighterAI missing!");
+            Destroy(currentOpponent);
+            return;
         }
 
-        if (zombieModel != null)
+        FighterBase newFighter = newAI;
+
+
+        if (opponentHealth != null)
+            opponentHealth.SetHealthBar(player2HealthBar);
+
+        PlayerController player =
+            FindFirstObjectByType<PlayerController>();
+
+        if (player == null)
         {
-            zombieModel.gameObject.SetActive(true);
-            Debug.Log("SPAWNER: Zombie model enabled!");
-        }
-        else
-        {
-            Debug.LogError("SPAWNER: Zombie child not found!");
-        }
-
-
-        FighterBase newFighter =
-    currentOpponent.GetComponentInChildren<FighterBase>(true);
-
-        Debug.Log("FOUND FIGHTER: " +
-    (newFighter != null ? newFighter.name : "NULL"));
-
-        if (newFighter == null)
-        {
-            Debug.LogError("FIGHTER NOT FOUND. Checking spawned hierarchy...");
-
-            foreach (var component in
-                currentOpponent.GetComponentsInChildren<MonoBehaviour>(true))
-            {
-                Debug.Log("COMPONENT: " + component.GetType().Name +
-                          " ON: " + component.gameObject.name);
-            }
-
+            Debug.LogError("SPAWNER: PlayerController missing!");
             return;
         }
 
         FighterCombat playerCombat =
-            FindFirstObjectByType<PlayerController>()
-            ?.GetComponent<FighterCombat>();
+            player.GetComponentInChildren<FighterCombat>(true);
 
-        FighterCombat opponentCombat =
-            currentOpponent.GetComponent<FighterCombat>();
+        FighterBase playerFighter =
+            player.GetComponentInParent<FighterBase>()
+            ?? player.GetComponentInChildren<FighterBase>(true);
+
 
         if (playerCombat != null)
             playerCombat.SetOpponent(newFighter);
 
-        if (opponentCombat != null && playerCombat != null)
-            opponentCombat.SetOpponent(
-                playerCombat.GetComponent<FighterBase>()
-            );
+        if (opponentCombat != null && playerFighter != null)
+            opponentCombat.SetOpponent(playerFighter);
 
+        Debug.Log("SPAWNER: Combat connected for " + currentOpponent.name);
+
+        // Start match
         Time.timeScale = 1f;
-
-        Debug.Log("SPAWNER: Starting new match.");
 
         matchManager.SetNewOpponent(newFighter);
         matchManager.StartNewMatch();
+
+        Debug.Log("SPAWNER: Spawned " + currentOpponent.name);
     }
 }

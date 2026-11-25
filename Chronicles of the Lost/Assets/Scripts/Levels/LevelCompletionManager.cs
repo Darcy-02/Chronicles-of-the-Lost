@@ -23,6 +23,7 @@ public class LevelCompletionManager : MonoBehaviour
             objectiveManager.OnObjectiveCompleted -= CompleteLevel;
     }
 
+
     private void CompleteLevel()
     {
         bool firstCompletion =
@@ -30,12 +31,29 @@ public class LevelCompletionManager : MonoBehaviour
 
         LevelProgressionManager.CompleteLevel(levelNumber);
 
+        if (GameDataManager.Instance != null)
+        {
+            GameData data = GameDataManager.Instance.CurrentData;
+
+            if (!data.completedLevels.Contains(levelNumber))
+                data.completedLevels.Add(levelNumber);
+
+            if (levelNumber < 5 &&
+                !data.unlockedLevels.Contains(levelNumber + 1))
+            {
+                data.unlockedLevels.Add(levelNumber + 1);
+            }
+
+            if (firstCompletion)
+                data.enemiesDefeated++;
+
+            GameDataManager.Instance.SaveGame();
+        }
 
         if (uiManager != null)
-        {
             uiManager.ShowVictory(firstCompletion);
-        }
 
         Debug.Log("Level " + levelNumber + " completed and saved!");
     }
+
 }

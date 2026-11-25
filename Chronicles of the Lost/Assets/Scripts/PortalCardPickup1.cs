@@ -27,11 +27,10 @@ public class PortalCardPickup1 : MonoBehaviour, IInteractable
 
         Debug.Log("Portal Access Card collected!");
 
-        OpponentSpawner spawner =
-            FindFirstObjectByType<OpponentSpawner>();
+        OpponentSpawner spawner = FindFirstObjectByType<OpponentSpawner>();
 
         if (spawner != null)
-            spawner.SpawnNextOpponent();
+            spawner.SpawnOpponent(0);
 
         Destroy(gameObject);
     }

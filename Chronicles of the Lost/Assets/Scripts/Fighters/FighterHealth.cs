@@ -58,6 +58,17 @@ public class FighterHealth : MonoBehaviour
         }
     }
 
+    public void SetHealthBar(HealthBar bar)
+    {
+        healthBar = bar;
+
+        if (healthBar != null)
+        {
+            healthBar.SetMaxHealth(maxHealth);
+            healthBar.SetHealth(currentHealth);
+        }
+    }
+
     public float GetHealth()
     {
         return currentHealth;

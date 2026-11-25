@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 6065937384939569745}
   - component: {fileID: 1703875980527143500}
   m_Layer: 5
-  m_Name: Player2HealthBar
+  m_Name: Player1HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -711,7 +711,7 @@ GameObject:
   - component: {fileID: 1573876834117375278}
   - component: {fileID: 7761338033054433988}
   m_Layer: 5
-  m_Name: Player1HealthBar
+  m_Name: Player2HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
