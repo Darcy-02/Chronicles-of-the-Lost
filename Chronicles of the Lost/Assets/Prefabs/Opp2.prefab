@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 543724230367243584}
+  - component: {fileID: 2490469546288630422}
   m_Layer: 0
   m_Name: Opp2
   m_TagString: Untagged
@@ -32,6 +33,28 @@ Transform:
   - {fileID: 3850924419724756504}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &2490469546288630422
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2972759615245587197}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8eb9093c5a9b1354285c2fd4bcb6a193, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &3673673021579534835
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -54,7 +77,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7bb68b9b8bf65374d867009081d462c0, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: -0.9659258
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7bb68b9b8bf65374d867009081d462c0, type: 3}
       propertyPath: m_LocalRotation.x
@@ -62,11 +85,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7bb68b9b8bf65374d867009081d462c0, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 1
+      value: 0.25881916
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7bb68b9b8bf65374d867009081d462c0, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7bb68b9b8bf65374d867009081d462c0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -74,7 +97,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7bb68b9b8bf65374d867009081d462c0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 180
+      value: 330
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7bb68b9b8bf65374d867009081d462c0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -91,10 +114,96 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7bb68b9b8bf65374d867009081d462c0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2802500422096741522}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7bb68b9b8bf65374d867009081d462c0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4026147034619287975}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7bb68b9b8bf65374d867009081d462c0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7623758500862040264}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7bb68b9b8bf65374d867009081d462c0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8195176050751556145}
   m_SourcePrefab: {fileID: 100100000, guid: 7bb68b9b8bf65374d867009081d462c0, type: 3}
 --- !u!4 &3850924419724756504 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 7bb68b9b8bf65374d867009081d462c0, type: 3}
   m_PrefabInstance: {fileID: 3673673021579534835}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4484155828649204898 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 7bb68b9b8bf65374d867009081d462c0, type: 3}
+  m_PrefabInstance: {fileID: 3673673021579534835}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2802500422096741522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4484155828649204898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f04be95889b800c4d947fbead49d90cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FighterAI
+  opponent: {fileID: 0}
+  health: {fileID: 0}
+  combat: {fileID: 8195176050751556145}
+  defense: {fileID: 0}
+  fighterEffects: {fileID: 7623758500862040264}
+  fighterAudio: {fileID: 4026147034619287975}
+  playerTarget: {fileID: 6333445479103868070, guid: b5536af1326e45849a3ce218daa92186, type: 3}
+  attackRange: 3
+  decisionInterval: 1.5
+  rotationSpeed: 720
+--- !u!114 &4026147034619287975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4484155828649204898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dc3fe31dae8a9e408960fa5cce8fc31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FighterAudio
+--- !u!114 &7623758500862040264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4484155828649204898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a4989a0528a88f409c634bbbb5d466a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FighterEffects
+  hitParticlePrefab: {fileID: 3916803651803369828, guid: d004bab30f724dd409390a72a044cd42, type: 3}
+  dissolvingController: {fileID: 0}
+  cameraController: {fileID: 0}
+--- !u!114 &8195176050751556145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4484155828649204898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74fc950b9309d3642a46623b9b444cc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FighterCombat
+  combatRange: 2.5
+  attackCooldown: 0.8
+  punchDamage: 10
+  kickDamage: 20
+  fighterAudio: {fileID: 4026147034619287975}
+  fighter: {fileID: 2802500422096741522}
+  opponent: {fileID: 269970323761074749, guid: b5536af1326e45849a3ce218daa92186, type: 3}
+  fighterAnimation: {fileID: 0}

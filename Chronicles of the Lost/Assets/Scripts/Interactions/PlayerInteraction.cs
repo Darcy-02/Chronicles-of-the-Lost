@@ -22,18 +22,26 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+            Interact();
+    }
+
+    public void MobileInteract()
+    {
+        Interact();
+    }
+
+    private void Interact()
+    {
         if (currentInteractable == null || isInteracting)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            isInteracting = true;
+        isInteracting = true;
 
-            if (animator != null)
-                animator.SetTrigger("Pickup");
+        if (animator != null)
+            animator.SetTrigger("Pickup");
 
-            currentInteractable.Interact(this);
-        }
+        currentInteractable.Interact(this);
     }
 
     private void OnTriggerEnter(Collider other)

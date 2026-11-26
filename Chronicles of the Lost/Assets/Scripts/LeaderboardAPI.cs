@@ -1,12 +1,15 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using System;
 
 public class LeaderboardAPI : MonoBehaviour
 {
     [Header("Supabase Settings")]
     [SerializeField] private string projectURL;
     [SerializeField] private string publishableKey;
+
+    public event Action<string> OnLeaderboardLoaded;
 
     private string LeaderboardURL =>
         projectURL + "/rest/v1/leaderboard";
@@ -36,11 +39,14 @@ public class LeaderboardAPI : MonoBehaviour
             if (request.result == UnityWebRequest.Result.Success)
             {
                 Debug.Log("LEADERBOARD DATA: " + request.downloadHandler.text);
+
+                OnLeaderboardLoaded?.Invoke(request.downloadHandler.text);
             }
             else
             {
                 Debug.LogError("LEADERBOARD ERROR: " + request.error);
-                Debug.LogError(request.downloadHandler.text);
+
+                OnLeaderboardLoaded?.Invoke("Unable to load leaderboard.");
             }
         }
     }

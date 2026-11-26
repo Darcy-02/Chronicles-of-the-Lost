@@ -35,6 +35,11 @@ public class FighterCombat : MonoBehaviour
     public void SetOpponent(FighterBase target)
     {
         opponent = target;
+
+        Debug.Log(
+            gameObject.name + " TARGET: " +
+            (opponent != null ? opponent.name : "NULL")
+        );
     }
 
     public void Punch()
@@ -69,7 +74,14 @@ public class FighterCombat : MonoBehaviour
 
     public void PunchHitFrame()
     {
-        if (pendingAttack != AttackType.Punch) return;
+        Debug.Log("PUNCH EVENT: " + gameObject.name);
+        Debug.Log("PENDING ATTACK: " + pendingAttack);
+
+        if (pendingAttack != AttackType.Punch)
+        {
+            Debug.LogWarning("PUNCH CANCELLED: Wrong pending attack!");
+            return;
+        }
 
         pendingAttack = AttackType.None;
         ApplyHit(punchDamage);
@@ -83,18 +95,32 @@ public class FighterCombat : MonoBehaviour
         ApplyHit(kickDamage);
     }
 
+    public void SetFighter(FighterBase self)
+    {
+        fighter = self;
+    }
+
     private void ApplyHit(float damage)
     {
+        Debug.Log(gameObject.name + " APPLYING DAMAGE");
         if (opponent == null || opponent.IsDefeated)
+        {
+            Debug.Log("NO VALID OPPONENT!");
             return;
+        }
 
         float distance = Vector3.Distance(
             transform.position,
             opponent.transform.position
         );
+        Debug.Log("DISTANCE TO PLAYER: " + distance);
 
         if (distance > combatRange)
+        {
+            Debug.Log("TARGET TOO FAR!");
             return;
+        }
+            
 
         opponent.TakeDamage(damage);
     }

@@ -43,7 +43,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlayPunch()
     {
-        Debug.Log("PUNCH SOUND REQUESTED");
+        Debug.Log("PUNCH SOUND REQUESTED BY: " + gameObject.name);
         PlaySound(punchSound);
     }
 
@@ -82,7 +82,8 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        Debug.Log("PLAYING SOUND: " + clip.name);
+        Debug.Log("PLAYING SOUND: " + clip.name +
+          " | Character: " + gameObject.name);
         sfxSource.PlayOneShot(clip);
     }
 }

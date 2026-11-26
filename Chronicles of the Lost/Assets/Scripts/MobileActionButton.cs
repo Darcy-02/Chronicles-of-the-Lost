@@ -10,10 +10,12 @@ public class MobileActionButton : MonoBehaviour,
         Punch,
         Kick,
         Block,
-        Combo
+        Combo,
+        Pickup
     }
 
     [SerializeField] private PlayerController player;
+    [SerializeField] private PlayerInteraction playerInteraction;
     [SerializeField] private ActionType action;
 
     public void OnPointerDown(PointerEventData eventData)
@@ -31,12 +33,15 @@ public class MobileActionButton : MonoBehaviour,
             case ActionType.Block:
                 player.MobileBlock();
                 break;
+
             case ActionType.Combo:
                 player.MobileCombo();
                 break;
+
+            case ActionType.Pickup:
+                playerInteraction.MobileInteract();
+                break;
         }
-
-
     }
 
     public void OnPointerUp(PointerEventData eventData)

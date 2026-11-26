@@ -96,7 +96,6 @@ public class OpponentSpawner : MonoBehaviour
 
         Debug.Log("SPAWNER: Combat connected for " + currentOpponent.name);
 
-        // Start match
         Time.timeScale = 1f;
 
         matchManager.SetNewOpponent(newFighter);
